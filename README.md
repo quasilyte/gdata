@@ -1,16 +1,23 @@
 # gdata
 
-A gamedata package that provides a convenient cross-platform for games.
+A gamedata package that provides a convenient cross-platform storage for games.
+
+Some examples of such gamedata that you might want to store:
+
+* Game settings
+* Save states
+* Replays
+* Pluging/mods metadata
 
 This package was made with [Ebitengine](https://github.com/hajimehoshi/ebiten/) in mind, but it should be usable with any kind of a game engine for Go.
 
 Platforms supported:
 
-* Windows
-* Linux
-* MacOS
+* Windows (file system, AppData)
+* Linux (file system, ~/.local/share)
+* MacOS (file system, ~/.local/share)
+* Android (file system, app data directory)
 * Browser/wasm (local storage)
-* Android
 
 This library tries to use the most conventional app data folder for every platform.
 
