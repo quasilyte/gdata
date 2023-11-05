@@ -1,3 +1,5 @@
+GOPATH_DIR=`go env GOPATH`
+
 test:
 	go test -v -count=3 .
 
