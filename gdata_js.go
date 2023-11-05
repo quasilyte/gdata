@@ -44,6 +44,11 @@ func (m *dataManager) SaveData(itemKey string, data []byte) error {
 	return nil
 }
 
+func (m *dataManager) DeleteData(itemKey string) error {
+	js.Global().Get("localStorage").Call("removeItem", m.DataPath(itemKey))
+	return nil
+}
+
 func (m *dataManager) LoadData(itemKey string) ([]byte, error) {
 	result := js.Global().Get("localStorage").Call("getItem", m.DataPath(itemKey))
 	if result.IsNull() {

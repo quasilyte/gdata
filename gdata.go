@@ -14,6 +14,7 @@ type Manager struct {
 type dataManagerImpl interface {
 	SaveData(itemKey string, data []byte) error
 	LoadData(itemKey string) ([]byte, error)
+	DeleteData(itemKey string) error
 	DataExists(itemKey string) bool
 	DataPath(itemKey string) string
 }
@@ -72,6 +73,18 @@ func (m *Manager) SaveItem(itemKey string, data []byte) error {
 // The returned error is usually a file read error.
 func (m *Manager) LoadItem(itemKey string) ([]byte, error) {
 	return m.impl.LoadData(itemKey)
+}
+
+// DeleteItem removes the data associated with the itemKey.
+//
+// Be careful with this function: it removes the data permanently.
+// There is no way to undo it.
+//
+// Trying to delete a non-existing itemKey is not an error.
+//
+// The returned error is usually a file operation error.
+func (m *Manager) DeleteItem(itemKey string) error {
+	return m.impl.DeleteData(itemKey)
 }
 
 // ItemExists reports whether the itemKey was saved before.
