@@ -1,5 +1,8 @@
 # gdata
 
+![Build Status](https://github.com/quasilyte/gdata/workflows/Go/badge.svg)
+[![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/quasilyte/gdata)](https://pkg.go.dev/mod/github.com/quasilyte/gdata)
+
 A gamedata package that provides a convenient cross-platform storage for games.
 
 Some examples of such gamedata that you might want to store:
