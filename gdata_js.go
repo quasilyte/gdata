@@ -31,7 +31,7 @@ func newDataManager(config Config) (dataManagerImpl, error) {
 }
 
 func (m *dataManager) DataPath(itemKey string) string {
-	return "_gdata_" + m.appName + "_" + itemKey
+	return m.appName + "_" + itemKey
 }
 
 func (m *dataManager) DataExists(itemKey string) bool {
