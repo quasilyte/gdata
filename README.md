@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/quasilyte/gdata/workflows/Go/badge.svg)
 [![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/quasilyte/gdata)](https://pkg.go.dev/mod/github.com/quasilyte/gdata)
 
-A gamedata package that provides a convenient cross-platform storage for games.
+A gamedata package that provides convenient cross-platform storage for games.
 
 Some examples of such gamedata that you might want to store:
 
@@ -25,6 +25,8 @@ Platforms supported:
 This library tries to use the most conventional app data folder for every platform.
 
 It provides a simple key-value style API. It can be considered to be a platform-agnostic localStorage.
+
+This package was part of my game development framework which I used in all of my Go-powered games. Now I'm feel like it's ready to become a part of the ecosystem.
 
 ## Installation
 
