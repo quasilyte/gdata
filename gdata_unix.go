@@ -27,7 +27,7 @@ func newDataManager(config Config) (dataManagerImpl, error) {
 }
 
 func (m *dataManager) DataPath(itemKey string) string {
-	return filepath.Join(m.dataPath, itemKey+".json")
+	return filepath.Join(m.dataPath, itemKey)
 }
 
 func (m *dataManager) DataExists(itemKey string) bool {
