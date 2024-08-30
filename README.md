@@ -42,28 +42,49 @@ package main
 import (
 	"fmt"
 
-	"github.com/quasilyte/gdata"
+	"github.com/quasilyte/gdata/v2"
 )
 
 func main() {
 	// m is a data manager; treat it as a connection to a filesystem.
 	m, err := gdata.Open(gdata.Config{
-		AppName: "my_game",
+		AppName: "mygame",
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	if err := m.SaveItem("save.data", []byte("mydata")); err != nil {
+	if err := m.SaveObjectProp("core", "save.data", []byte("mydata")); err != nil {
+		panic(err)
+	}
+	if err := m.SaveObjectProp("core", "settings.json", []byte("settings")); err != nil {
 		panic(err)
 	}
 
-	result, err := m.LoadItem("save.data")
+	result, err := m.LoadObjectProp("core", "save.data")
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("=>", string(result)) // "mydata"
 
-	fmt.Println("exists?", m.ItemExists("save.data")) // true
+	fmt.Println(m.ObjectExists("core"))                      // true
+	fmt.Println(m.ObjectPropExists("core", "save.data"))     // true
+	fmt.Println(m.ObjectPropExists("core", "settings.json")) // true
+
+	{
+		propKeys, err := m.ListObjectProps("core")
+		if err != nil {
+			panic(err)
+		}
+		for _, p := range propKeys {
+			v, err := m.LoadObjectProp("core", p)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("key=", p, "value=", string(v))
+		}
+	}
+
+	fmt.Println(m.ObjectPropExists("core", "save.data")) // true
 }
 ```
