@@ -3,6 +3,7 @@
 package gdata
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -12,6 +13,7 @@ import (
 //
 // Objects are folders, files are their properties.
 type filesystemDataManager struct {
+	root     *os.Root
 	dataPath string
 }
 
@@ -25,10 +27,14 @@ func (m *filesystemDataManager) ObjectPropPath(objectKey, propKey string) string
 
 func (m *filesystemDataManager) ListObjectProps(objectKey string) ([]string, error) {
 	p := m.objectPath(objectKey)
-	if !fileExists(p) {
+	if !fileExists(m.root, p) {
 		return nil, nil
 	}
-	files, err := os.ReadDir(p)
+	dir, err := m.root.Open(p)
+	if err != nil {
+		return nil, err
+	}
+	files, err := dir.ReadDir(-1)
 	if err != nil {
 		return nil, err
 	}
@@ -41,41 +47,56 @@ func (m *filesystemDataManager) ListObjectProps(objectKey string) ([]string, err
 
 func (m *filesystemDataManager) SaveObjectProp(objectKey, propKey string, data []byte) error {
 	p := m.objectPath(objectKey)
-	if !fileExists(p) {
-		if err := os.Mkdir(p, os.ModePerm); err != nil {
+	if !fileExists(m.root, p) {
+		if err := m.root.Mkdir(p, os.ModePerm); err != nil {
 			return err
 		}
 	}
-	return os.WriteFile(filepath.Join(p, propKey), data, 0o666)
+
+	file, err := m.root.Create(p)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	return err
 }
 
 func (m *filesystemDataManager) LoadObjectProp(objectKey, propKey string) ([]byte, error) {
 	p := m.ObjectPropPath(objectKey, propKey)
-	if !fileExists(p) {
+	if !fileExists(m.root, p) {
 		return nil, nil
 	}
-	return os.ReadFile(p)
+
+	file, err := m.root.Open(p)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	return io.ReadAll(file)
 }
 
 func (m *filesystemDataManager) ObjectPropExists(objectKey, propKey string) bool {
-	return fileExists(m.ObjectPropPath(objectKey, propKey))
+	return fileExists(m.root, m.ObjectPropPath(objectKey, propKey))
 }
 
 func (m *filesystemDataManager) ObjectExists(objectKey string) bool {
-	return fileExists(m.objectPath(objectKey))
+	return fileExists(m.root, m.objectPath(objectKey))
 }
 
 func (m *filesystemDataManager) DeleteObjectProp(objectKey, propKey string) error {
 	p := m.ObjectPropPath(objectKey, propKey)
-	if !fileExists(p) {
+	if !fileExists(m.root, p) {
 		return nil
 	}
-	return os.Remove(p)
+	return m.root.Remove(p)
 }
 
 func (m *filesystemDataManager) DeleteObject(objectKey string) error {
 	p := m.objectPath(objectKey)
 	// Since RemoveAll returns a nil error for a non-existing
 	// path, we can avoid doing an explicit fileExists call.
-	return os.RemoveAll(p)
+	return removeAllInRoot(m.root, p)
 }
