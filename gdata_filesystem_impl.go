@@ -42,7 +42,7 @@ func (m *filesystemDataManager) ListObjectProps(objectKey string) ([]string, err
 func (m *filesystemDataManager) SaveObjectProp(objectKey, propKey string, data []byte) error {
 	p := m.objectPath(objectKey)
 	if !fileExists(p) {
-		if err := os.Mkdir(p, os.ModePerm); err != nil {
+		if err := os.MkdirAll(p, os.ModePerm); err != nil {
 			return err
 		}
 	}
