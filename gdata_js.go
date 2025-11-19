@@ -75,6 +75,18 @@ func (m *dataManager) LoadObjectProp(objectKey, propKey string) ([]byte, error) 
 	return []byte(result.String()), nil
 }
 
+func (m *dataManager) ReadObjectProp(objectKey, propKey string, buf []byte) (int, error) {
+	result := m.getLib().Call("loadObjectProp", m.appName, objectKey, propKey)
+	if result.IsNull() {
+		return 0, nil
+	}
+	// TODO: can we use something like js.CopyBytesToGo() to avoid
+	// the extra data copying here? String() would allocated a full-size []byte.
+	asString := result.String()
+	n := copy(buf, asString)
+	return n, nil
+}
+
 func (m *dataManager) ObjectPropExists(objectKey, propKey string) bool {
 	return m.getLib().Call("objectPropExists", m.appName, objectKey, propKey).Bool()
 }

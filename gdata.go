@@ -19,6 +19,7 @@ type dataManagerImpl interface {
 	SaveObjectProp(objectKey, propKey string, data []byte) error
 
 	LoadObjectProp(objectKey, propKey string) ([]byte, error)
+	ReadObjectProp(objectKey, propKey string, buf []byte) (int, error)
 
 	ObjectPropExists(objectKey, propKey string) bool
 	ObjectExists(objectKey string) bool
@@ -98,6 +99,26 @@ func (m *Manager) SaveObjectProp(objectKey, propKey string, data []byte) error {
 // The returned error is usually a file read error.
 func (m *Manager) LoadObjectProp(objectKey, propKey string) ([]byte, error) {
 	return m.impl.LoadObjectProp(objectKey, fixPropKey(propKey))
+}
+
+// ReadObjectProp is like LoadObjectProp, but reads only up
+// to the specified size (in bytes). This size is specified by the buf's len.
+//
+// This is usually useful on FS-like environments where save files
+// can be large, but the header reading operation is needed to perform
+// an efficient list-like option.
+//
+// It can also be useful if you want to reuse the destination buffer for
+// reading smaller data into a single reusable buffer.
+//
+// The size is usually a fixed-size header block size.
+// If you have a dynamic header size, there should be a way for
+// you to know the size before calling this function (e.g. put it in the propKey).
+//
+// If data is smaller than size, the returned byte slice will have a length
+// equal to the actual data size read.
+func (m *Manager) ReadObjectProp(objectKey, propKey string, buf []byte) (int, error) {
+	return m.impl.ReadObjectProp(objectKey, fixPropKey(propKey), buf)
 }
 
 // ObjectExists reports whether the object was saved before.

@@ -62,6 +62,37 @@ func TestSaveLoad(t *testing.T) {
 			t.Fatalf("saved and loaded data mismatch:\nwant: %q\n have: %q", string(data), string(loadedData))
 		}
 
+		// Reading the prefix that is shorter than the data size.
+		{
+			buf := make([]byte, 3)
+			n, err := m.ReadObjectProp(testObjectKey, testItemKey, buf)
+			if n != len(buf) {
+				t.Fatalf("reading n/len mismatch:\nwant: %d\nhave: %d", len(buf), n)
+			}
+			if err != nil {
+				t.Fatalf("error while doing ReadObjectProp: %v", err)
+			}
+			if string(buf) != "exa" {
+				t.Fatalf("invalid data read")
+			}
+		}
+
+		// Reading the prefix that is longer than the data size.
+		{
+			buf := make([]byte, 64)
+			n, err := m.ReadObjectProp(testObjectKey, testItemKey, buf)
+			if n != len(data) {
+				t.Fatalf("reading n/len mismatch:\nwant: %d\nhave: %d", len(data), n)
+			}
+			if err != nil {
+				t.Fatalf("error while doing ReadObjectProp: %v", err)
+			}
+			data2 := buf[:n]
+			if string(data2) != string(data) {
+				t.Fatalf("invalid data read")
+			}
+		}
+
 		// Now we're deleting an existing item.
 		if err := m.DeleteObjectProp(testObjectKey, testItemKey); err != nil {
 			t.Fatalf("delete should never result in an error here (got %v)", err)

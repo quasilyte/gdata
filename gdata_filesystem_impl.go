@@ -3,6 +3,7 @@
 package gdata
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -55,6 +56,29 @@ func (m *filesystemDataManager) LoadObjectProp(objectKey, propKey string) ([]byt
 		return nil, nil
 	}
 	return os.ReadFile(p)
+}
+
+func (m *filesystemDataManager) ReadObjectProp(objectKey, propKey string, buf []byte) (int, error) {
+	p := m.ObjectPropPath(objectKey, propKey)
+
+	f, err := os.Open(p)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return 0, nil
+		}
+		return 0, err
+	}
+	defer f.Close()
+
+	n, err := io.ReadFull(f, buf)
+	switch {
+	case err == io.ErrUnexpectedEOF:
+		// Not an error.
+	case err != nil:
+		return n, err
+	}
+
+	return n, nil
 }
 
 func (m *filesystemDataManager) ObjectPropExists(objectKey, propKey string) bool {
