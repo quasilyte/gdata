@@ -42,6 +42,18 @@ type Config struct {
 	//
 	// An empty app name is not allowed.
 	AppName string
+
+	// Root is an optional storage path override.
+	//
+	// By default, an platform-specific path will be inferred,
+	// but some use cases like Steam Cloud may require you
+	// to specify a path known ahead of time.
+	// This option can be used to store the data in
+	// a folder of your choice instead of some ~/.local/share/$AppName.
+	// This folder needs to exist!
+	//
+	// It's ignored on environments like JS/wasm.
+	Root string
 }
 
 // Open attempts to create a gamedata manager.
